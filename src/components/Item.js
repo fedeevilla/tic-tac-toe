@@ -10,15 +10,13 @@ const item = {
 };
 
 const Circle = styled(motion.li)`
-  &.item {
-    font-size: 3rem;
-    background: white;
-    border-radius: 100%;
+  font-size: 2rem;
+  background: white;
+  border-radius: 100%;
 
-    &:hover {
-      background: ${({ selected }) => !selected && "gainsboro"};
-      cursor: pointer;
-    }
+  &:hover {
+    background: ${({ selected }) => !selected && "gainsboro"};
+    cursor: ${({ selected }) => !selected && "pointer"};
   }
 
   .item-container {
@@ -31,7 +29,6 @@ const Circle = styled(motion.li)`
 
 const Item = ({ selected, onClick }) => (
   <Circle
-    className="item"
     variants={item}
     selected={selected}
     whileHover={!selected && { scale: 1.1 }}

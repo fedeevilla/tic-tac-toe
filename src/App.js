@@ -1,8 +1,10 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import Board from "./components/Board";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { verifyWinner } from "./utils";
+import Button from "./components/Button";
+import History from "./components/History";
 
 const initialState = [
   { id: 1, selected: null },
@@ -26,47 +28,41 @@ const Title = styled(motion.h1)`
   text-align: center;
 `;
 
-const Winner = styled.div`
+const Winner = styled(motion.div)`
   display: flex;
   justify-content: space-around;
   align-items: center;
 `;
 
-const Button = styled(motion.button)`
-  background: #0299ff;
-  padding: 15px;
-  font-size: 22px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-
-  &:focus {
-    outline: none;
-  }
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
 `;
+
+const history = JSON.parse(localStorage.getItem("history"));
 
 const App = () => {
   const [isVisible, setVisible] = React.useState(false);
   const [turn, setTurn] = React.useState(1);
   const [array, setSelected] = React.useState(initialState);
   const [winner, setWinner] = React.useState(null);
-  const [player1wins, setPlayer1] = React.useState(0);
-  const [player2wins, setPlayer2] = React.useState(0);
+  const [player1wins, setPlayer1] = React.useState(history.player1wins || 0);
+  const [player2wins, setPlayer2] = React.useState(history.player2wins || 0);
 
   React.useEffect(() => {
     if (verifyWinner(array)) {
       setWinner(turn);
       if (turn === 1) {
-        setPlayer1(player1wins + 1);
-      } else {
         setPlayer2(player2wins + 1);
+      } else {
+        setPlayer1(player1wins + 1);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [array, turn]);
 
   return (
-    <div>
+    <div style={{ margin: 20 }}>
       {!isVisible ? (
         <Splash>
           <Title initial={{ x: "-100vh" }} animate={{ x: 0, y: 0 }}>
@@ -87,12 +83,15 @@ const App = () => {
       ) : (
         <>
           {winner ? (
-            <Winner>
-              <Title initial={{ x: "100vh" }} animate={{ x: 0, y: 0 }}>
-                {`Player ${turn ? 1 : 2} wins!`}
-              </Title>
-
+            <Winner
+              initial={{ scale: 0.5 }}
+              animate={{
+                scale: 1,
+              }}
+            >
+              <Title>{`Player ${turn ? 1 : 2} wins!`}</Title>
               <Button
+                style={{ fontSize: 18 }}
                 onClick={() => {
                   setSelected(initialState);
                   setTurn(1);
@@ -103,13 +102,11 @@ const App = () => {
               </Button>
             </Winner>
           ) : (
-            <>
-              <Title initial={{ x: "100vh" }} animate={{ x: 0, y: 0 }}>
-                {`Player ${turn} plays`}
-              </Title>
-            </>
+            <Title initial={{ x: "100vh" }} animate={{ x: 0, y: 0 }}>
+              {`Player ${turn} plays`}
+            </Title>
           )}
-          <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <Wrapper>
             <Board
               winner={winner}
               turn={turn}
@@ -117,12 +114,13 @@ const App = () => {
               array={array}
               setSelected={setSelected}
             />
-            <div>
-              <h1 style={{ marginLeft: 20 }}>History</h1>
-              <p>{`Player 1: ${player1wins} wins.`}</p>
-              <p>{`Player 2: ${player2wins} wins.`}</p>
-            </div>
-          </div>
+            <History
+              player1wins={player1wins}
+              player2wins={player2wins}
+              setPlayer1={setPlayer1}
+              setPlayer2={setPlayer2}
+            />
+          </Wrapper>
         </>
       )}
     </div>

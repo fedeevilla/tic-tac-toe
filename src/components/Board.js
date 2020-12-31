@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import styled from "styled-components";
+import { useCallback } from "react";
+import styled from "styled-components/macro";
 import Item from "./Item";
 
 const container = {
@@ -20,8 +21,8 @@ const container = {
 };
 
 const Table = styled(motion.ul)`
-  width: 450px;
-  height: 450px;
+  width: 200px;
+  height: 200px;
   display: grid;
   overflow: hidden;
   margin: auto;
@@ -29,35 +30,42 @@ const Table = styled(motion.ul)`
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 25px;
-  padding: 15px;
+  padding: 25px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50px;
 `;
 
-const Board = ({ array, setSelected, turn, setTurn, winner }) => (
-  <Table variants={container} initial="hidden" animate="visible">
-    {array.map((item) => (
-      <Item
-        key={item.id}
-        selected={item.selected}
-        onClick={() => {
-          if (!winner && !item.selected) {
-            setSelected(
-              array.map((i) =>
-                i.id === item.id
-                  ? {
-                      id: i.id,
-                      selected: turn,
-                    }
-                  : i
-              )
-            );
-            setTurn(turn === 1 ? 2 : 1);
-          }
-        }}
-      />
-    ))}
-  </Table>
-);
+const Board = ({ array, setSelected, turn, setTurn, winner }) => {
+  const handleSelect = useCallback(
+    (item) => {
+      if (!winner && !item.selected) {
+        setSelected(
+          array.map((i) =>
+            i.id === item.id
+              ? {
+                  id: i.id,
+                  selected: turn,
+                }
+              : i
+          )
+        );
+        setTurn(turn === 1 ? 2 : 1);
+      }
+    },
+    [array, setSelected, turn, setTurn, winner]
+  );
+
+  return (
+    <Table variants={container} initial="hidden" animate="visible">
+      {array.map((item) => (
+        <Item
+          key={item.id}
+          selected={item.selected}
+          onClick={() => handleSelect(item)}
+        />
+      ))}
+    </Table>
+  );
+};
 
 export default Board;
