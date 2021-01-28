@@ -46,8 +46,8 @@ const App = () => {
   const [turn, setTurn] = React.useState(1);
   const [array, setSelected] = React.useState(initialState);
   const [winner, setWinner] = React.useState(null);
-  const [player1wins, setPlayer1] = React.useState(history.player1wins || 0);
-  const [player2wins, setPlayer2] = React.useState(history.player2wins || 0);
+  const [player1wins, setPlayer1] = React.useState(history?.player1wins || 0);
+  const [player2wins, setPlayer2] = React.useState(history?.player2wins || 0);
 
   React.useEffect(() => {
     if (verifyWinner(array)) {
